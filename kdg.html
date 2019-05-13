@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+	<title>Karlsruhe Data Game</title>
+	<meta charset="UTF-8">
+	<link rel="shortcut icon" type="image/x-icon" href="img/code4.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- cache disable here. Can do also via PHP headers -->
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+
+
+	<link rel="stylesheet" href="css/w3.css">
+	<script src="js/w3.js"></script>
+
+	<!-- Make sure you put leaflet js after css -->
+	<!--
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin="">
+</script>
+-->
+	<!-- local leaflet -->
+	<link rel="stylesheet" href="css/leaflet.css">
+	<script src="js/leaflet.js"></script>
+
+	<!-- charts. c3 needs d3 -->
+	<!--script src="https://d3js.org/d3.v5.min.js"></script-->
+	<link rel="stylesheet" href="css/c3.min.css">
+	<script src="js/d3.min.js"></script>
+	<script src="js/c3.min.js"></script>
+
+	<!-- in case we want local hashin, include cryptojs -->
+	<script src="js/crypto-js.js"></script>
+
+	<!-- qr code library -->
+	<script src="js/jsQR.js" type="text/javascript"></script>
+
+
+	<!-- finally include our custom stuff -->
+	<link rel="stylesheet" href="css/custom.css">
+	<script src="js/custom.js"></script>
+
+
+</head>
+
+<body>
+
+	<h1>KA Data Game</h1>
+	<div id="intro">
+		<h3>
+			Mach mit beim Karlsruher
+			Datenspiel und lass Dich bezahlen: die besten DatensammlerInnen werden belohnt.<br>
+			Ausserdem bekommen die besten Fotos einen Preis.
+		</h3>
+		<p>
+			Verschenke nicht Deine Daten an FB, GG und Co!
+		</p>
+		<p>Mehr Infos unter .....
+			<br>
+			Wir zeichnen alle Daten auf, die wir von Dir bekommen können, werten sie
+			aus und veröffentlichen Sie, aber nur anonymisiert.
+			Wir speichern auch Cookies auf Deinem Rechner, damit wir die Eingaben
+			zusammenhalten können.
+			Wenn Du diese Webseiten benutzt, erklärst Du Dich damit einverstanden.
+		</p>
+	</div>
+	<div class="tab">
+		<button class="tablinks" onclick="openTab(event, 'registerTab')">Anmelden</button>
+		<button class="tablinks" onclick="openTab(event, 'shareTab')">Teilen</button>
+		<button class="tablinks" onclick="openTab(event, 'viewTab')">Ansehen</button>
+		<button class="tablinks" onclick="openTab(event, 'statusTab')">Auswerten</button>
+	</div>
+	<div id="ColorSwitch">
+		<button onclick="toggleColor()">Farbschema</button>
+	</div>
+
+
+	<div id="registerTab" class="tabcontent  w3-container">
+		<h2>Anmelden</h2>
+		<div class="w3-row  w3-hide" id="regDone">
+			<div class="w3-col">
+				<p>Du bist mit dieser ID angemeldet: <span id="regId"></span></p>
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col" id="regDue">
+				<p>Mit dem Formular kannst Dich registrieren. Du brauchst dazu einen Code,
+					den Du nur am "KDG-SpaceCraft" bekommst.
+					<br>... das Formular geht noch nicht, drück einfach nochmal auf "anmelden"<br>
+				</p>
+			</div>
+		</div>
+
+		<div class="w3-row" id="regDue">
+			<div class="w3-col">
+				<div class="w3-row">
+					<div class="w3-col">
+						<form id="regform" class="w3-container w3-card-4" action="/kdg/kdg.php" target="_blank" method="post">
+							<div class="w3-section">
+								<button id="registerButton" onclick="registration()" class="w3-button">Jetzt Anmelden</button>
+							</div>
+							<div class="w3-section">
+								<label for="Email">Email</label>
+								<input id="email" class="w3-input" type="email" name="Email" required>
+							</div>
+							<div class="w3-hide">
+								<label for="qrcode">QRcode</label>
+								<input id="qrcode" type="text" name="QRCode" value="123" required>
+							</div>
+					</div>
+					</form>
+				</div>
+			</div>
+			<div class="w3-row">
+				<div class="w3-col">
+					<video id="qrvideo" autoplay class=" imgData">Qr code </video>
+					<canvas id="qrcanvas" class="imgData w3-hide">Qr canvas </canvas>
+					<p id="qrdata">Bitte scanne den QR-Code für die Anmledung</p>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div id="shareTab" class="tabcontent  w3-container">
+		<h2>Daten Teilen</h2>
+		<p id="shareIntro">Hier erzeugst Du die Daten, mit denen Du am Spiel teilnimmst. Nimm ein
+			Foto in der Stadt auf und bewerte, ob Dir die Gegend oder die Situation
+			gefällt oder nicht. Mache bitte keine Portraits von Personen, denn wir müssen
+			aus Datenschutzgründen die Gesichter verpixeln. Du kannst auch einen Kommentar
+			eingeben und den Strassennamen, denn die Ortsbestimmung per WLAN ist nicht sehr genau.
+			Das Foto wird zusammen mit Deinen anderen Angaben und dem Datum auf unseren
+			Server geladen und ausgewertet. Du kannst mehrere Fotos hochladen, aber
+			Du bekommst nicht mehr als eines pro Tag angerechnet.
+		</p>
+		<div class="w3-row">
+			<div class="w3-col w3-quarter w3-clear">
+				<div class="w3-container w3-card-4 ">
+					<button id="shutter" class="w3-button snap">&#x1F4F7; Schnappschuss</button>
+				</div>
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col w3-half">
+				<video id="monitor" autoplay class=" imgData"></video>
+			</div>
+			<div class="w3-col w3-half">
+				<canvas id="photo" class="imgData"></canvas>
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col w3-half">
+				<div class="w3-container w3-card-4 ">
+					<input type="text" placeholder="Kommentar" maxlength="80" style="width:100%"></input>
+				</div>
+			</div>
+			<div class="w3-col w3-half">
+				<div class="w3-container w3-card-4 ">
+					<input type="text" placeholder="Platz oder Strasse" maxlength="80" style="width:100%"></input>
+				</div>
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col w3-quarter">
+				<div class="w3-container w3-card-4 ">
+					<button id="goodScorer" onclick='upload("good")' class="w3-button goodScore">&#x2764; Mehr davon</button>
+				</div>
+			</div>
+			<div class="w3-col w3-quarter">
+				<p></p>
+			</div>
+			<div class="w3-col w3-quarter">
+				<div class="w3-container w3-card-4 ">
+					<button id="badScore" onclick='upload("bad")' class="w3-button badScore">&#x2620; Lieber nicht</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="viewTab" class="tabcontent  w3-container">
+		<h2>Ansicht</h2>
+		<p id="viewIntro">Hier siehst Du, an welchen Orten schon Daten eingegeben wurden.
+			Klicke auf einen Pin und Du siehst die EIngaben und ein Thumbnail Foto.
+		</p>
+		<div class="w3-row">
+			<div class="w3-col">
+				<div id="mapId"></div>
+			</div>
+		</div>
+		<p id="mapStatus"></p>
+	</div>
+
+	<div id="statusTab" class="tabcontent  w3-container">
+		<h2>Status</h2>
+		<p id="statusIntro">Dieses Diagramm zeigt Dir, wieviele Daten schon gesammelt wurden, sowie
+			Spitzen- und Mittelwert. Zusammen mit Deinem eigenen Score kannst Du damit
+			abschätzen, ob Du zu den Gewinnern gehören könntest. Wenn Du noch nicht so weit oben bist,
+			mach einfach jeden Tag ein Foto.
+		</p>
+		<div class="w3-row">
+			<div class="w3-col" id="chart">
+				<p>This is the chart showing your status</p>
+			</div>
+			<div class="w3-col">
+				<button onclick="clearId()">Clear ID</button>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+</html>
