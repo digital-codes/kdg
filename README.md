@@ -19,6 +19,9 @@ Im SpaceCraft zeigen wir zu Beginn und Ende jedes Workshop kurz den
 aktuellen Stand auf dem Beamer (vom Transparenzportal). 
 Bei den "Blitz"-Transparenzcafes gibt es Infos zum Spiel und dem Portal
 
+## Demo
+ist hier: https://codelikeanartist.de/kdg/kdg.html 
+
 ## Code
 Die Frontenedfunktion sind im Prinzip realisiert (aber noch zu verschönern)
 
