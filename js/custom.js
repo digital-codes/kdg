@@ -7,6 +7,8 @@ var shareloc = {"status":"null"}; // don't use "location" as variable name!
 var regmail = "";
 var regcode = "";
 
+var cswitch = false;
+
 // tab handling
 function openTab(evt, tabName) {
   var i, tabcontent, tablinks;
@@ -114,7 +116,17 @@ function clearId() {
 
 // --------------- color switch -------------------
 function toggleColor() {
+  cswitch = !cswitch; // toggle
   w3.toggleClass("body", "darklight", "brightlight")
+  // also change diagram axis colors
+	if (cswitch) {
+		// black background
+	  	w3.addStyle('.c3-axis path','stroke','white')
+	  	w3.addStyle('.c3-axis text','fill','white')
+	} else {
+	  	w3.addStyle('.c3-axis path','stroke','black')
+	  	w3.addStyle('.c3-axis text','fill','black')
+	}
 }
 
 // ---------------- geolocation ----------------------
@@ -195,9 +207,16 @@ async function share() {
   const shutter = document.getElementById('shutter');
 
   try {
-    video.srcObject = await navigator.mediaDevices.getUserMedia({
-      video: true
-    });
+    video.srcObject = await navigator.mediaDevices.getUserMedia(
+      {
+        audio: false,
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      }
+    );
 
     await new Promise((resolve) => video.onloadedmetadata = resolve);
     canvas.width = video.videoWidth;
@@ -257,6 +276,7 @@ function getQR() {
 
   // Use facingMode: environment to attemt to get the front camera on phones
   navigator.mediaDevices.getUserMedia({
+    audio: false,
     video: {
       facingMode: "environment"
     }

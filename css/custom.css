@@ -43,12 +43,12 @@ body {
 
 /* basic stuff */
 .darklight {
-  background-color: black;
-  color: white;
+  background-color: black!important;
+  color: white!important;
 }
 .brightlight {
-  background-color: white;
-  color: black;
+  background-color: white!important;
+  color: black!important;
 }
 
 #mapId { height: 240px; }
@@ -88,6 +88,7 @@ body {
 #chart .c3-line-Selbst {
   stroke-width: 5px;
 }
+
 
 /*
 #monitor { height: 240px; }
